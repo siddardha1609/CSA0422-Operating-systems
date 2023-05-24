@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+sem_t mutex;
+int shared_data;
+
+void* double_data(void* arg) {
+    sem_wait(&mutex);
+    printf("Thread 1: Reading shared data as %d\n", shared_data);
+    shared_data *= 2;
+    printf("Thread 1: Doubled shared data is %d\n", shared_data);
+    sem_post(&mutex);
+    pthread_exit(NULL);
+}
+
+void* multiply_data(void* arg) {
+    sem_wait(&mutex);
+    printf("Thread 2: Reading shared data as %d\n", shared_data);
+    shared_data *= 5;
+    printf("Thread 2: Multiplied shared data is %d\n", shared_data);
+    sem_post(&mutex);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread1, thread2;
+    sem_init(&mutex, 0, 1);
+    shared_data = 10;
+    printf("Main Thread: Initial shared data is %d\n", shared_data);
+    pthread_create(&thread1, NULL, double_data, NULL);
+    pthread_create(&thread2, NULL, multiply_data, NULL);
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+    sem_destroy(&mutex);
+    return 0;
+}
