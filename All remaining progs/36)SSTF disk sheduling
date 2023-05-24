@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+int absDiff(int a, int b) {
+    return abs(a - b);
+}
+
+int findClosestTrack(int tracks[], int numTracks, int currentTrack, int visited[]) {
+    int minDiff = INT_MAX;
+    int closestTrack = -1;
+
+    for (int i = 0; i < numTracks; i++) {
+        if (!visited[i]) {
+            int diff = absDiff(currentTrack, tracks[i]);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestTrack = i;
+            }
+        }
+    }
+
+    return closestTrack;
+}
+
+double sstfDiskScheduling(int tracks[], int numTracks, int startTrack) {
+    int* visited = (int*)calloc(numTracks, sizeof(int));
+    int currentTrack = startTrack;
+    int totalHeadMovement = 0;
+
+    for (int i = 0; i < numTracks; i++) {
+        int closestTrack = findClosestTrack(tracks, numTracks, currentTrack, visited);
+        visited[closestTrack] = 1;
+        totalHeadMovement += absDiff(currentTrack, tracks[closestTrack]);
+        currentTrack = tracks[closestTrack];
+    }
+
+    free(visited);
+
+    return (double)totalHeadMovement / numTracks;
+}
+
+int main() {
+    int numTracks;
+
+    printf("Enter the number of tracks: ");
+    scanf("%d", &numTracks);
+
+    int tracks[numTracks];
+
+    printf("Enter the track positions:\n");
+    for (int i = 0; i < numTracks; i++) {
+        printf("Track %d: ", i + 1);
+        scanf("%d", &tracks[i]);
+    }
+
+    int startTrack;
+    printf("Enter the starting track position: ");
+    scanf("%d", &startTrack);
+
+    double avgHeadMovement = sstfDiskScheduling(tracks, numTracks, startTrack);
+
+    printf("Average head movement: %.2lf\n", avgHeadMovement);
+
+    return 0;
+}
