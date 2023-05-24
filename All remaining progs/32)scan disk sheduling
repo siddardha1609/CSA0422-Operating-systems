@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int abs_diff(int a, int b) {
+    return (a > b) ? (a - b) : (b - a);
+}
+
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+float calculate_average_head_movement(int tracks[], int n, int head_position) {
+    qsort(tracks, n, sizeof(int), compare);
+
+    int current_track, prev_track;
+    int total_head_movement = 0;
+
+    int i;
+    for (i = 0; i < n; i++) {
+        if (tracks[i] > head_position)
+            break;
+    }
+    prev_track = tracks[i - 1];
+
+   
+    for (i=0; i < n; i++) {
+        current_track = tracks[i];
+        total_head_movement += abs_diff(prev_track, current_track);
+        prev_track = current_track;
+    }
+
+    for (i = i - 1; i >= 0; i--) {
+        current_track = tracks[i];
+        total_head_movement += abs_diff(prev_track, current_track);
+        prev_track = current_track;
+    }
+
+    return (float)total_head_movement / n;
+}
+
+int main() {
+    int num_tracks;
+    printf("Enter the number of tracks: ");
+    scanf("%d", &num_tracks);
+
+    int* tracks = (int*)malloc(num_tracks * sizeof(int));
+    printf("Enter the track positions:\n");
+    for (int i = 0; i < num_tracks; i++) {
+        scanf("%d", &tracks[i]);
+    }
+
+    int head_position;
+    printf("Enter the head position: ");
+    scanf("%d", &head_position);
+
+    float average_head_movement = calculate_average_head_movement(tracks, num_tracks, head_position);
+
+    printf("Average head movement: %.2f\n", average_head_movement);
+
+    free(tracks);
+    return 0;
+}
