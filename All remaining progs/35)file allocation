@@ -1,0 +1,61 @@
+#include <stdio.h>
+
+#define TOTAL_BLOCKS 16
+#define INODE_BLOCKS 8
+#define FILE_SIZE 1024
+
+int isBlockFree(int block, int* allocationMap) {
+    return allocationMap[block] == 0;
+}
+
+int allocateBlocks(int startBlock, int numBlocks, int* allocationMap) {
+    for (int i = startBlock; i < startBlock + numBlocks; i++) {
+        if (!isBlockFree(i, allocationMap)) {
+            return 0;
+        }
+    }
+
+    for (int i = startBlock; i < startBlock + numBlocks; i++) {
+        allocationMap[i] = 1;
+    }
+
+    return 1;
+}
+
+int main() {
+    int allocationMap[TOTAL_BLOCKS] = { 0 };
+    int startBlock, numBlocks;
+
+    // Allocate iNode blocks (0 to 7)
+    for (int i = 0; i < INODE_BLOCKS; i++) {
+        allocationMap[i] = 1;
+    }
+
+    printf("Enter the starting block number for the file: ");
+    scanf("%d", &startBlock);
+
+    if (startBlock < 8 || startBlock > TOTAL_BLOCKS) {
+        printf("Invalid starting block number.\n");
+        return 0;
+    }
+
+    printf("Enter the number of blocks required for the file: ");
+    scanf("%d", &numBlocks);
+
+    if (numBlocks < 1 || numBlocks > TOTAL_BLOCKS - INODE_BLOCKS) {
+        printf("Invalid number of blocks.\n");
+        return 0;
+    }
+
+    if (allocateBlocks(startBlock, numBlocks, allocationMap)) {
+        printf("Blocks allocated successfully.\n");
+        printf("\nAllocation Map:\n");
+        for (int i = 0; i < TOTAL_BLOCKS; i++) {
+            printf("Block %2d: %s\n", i, isBlockFree(i, allocationMap) ? "Free" : "Allocated");
+        }
+    } else {
+        printf("Not enough contiguous blocks available for the file.\n");
+    }
+
+    return 0;
+}
