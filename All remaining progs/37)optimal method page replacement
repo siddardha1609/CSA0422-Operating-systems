@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+int main() {
+    int pageFrames, pageReferences, i, j, k, flag, pageFaults = 0;
+    printf("Enter the number of page frames: ");
+    scanf("%d", &pageFrames);
+    int frame[pageFrames];
+    printf("Enter the number of page references: ");
+    scanf("%d", &pageReferences);
+    int reference[pageReferences];
+    printf("Enter the page reference sequence: ");
+    for (i = 0; i < pageReferences; i++) {
+        scanf("%d", &reference[i]);
+    }
+    
+    for (i = 0; i < pageFrames; i++) {
+        frame[i] = -1;
+    }
+    
+    for (i = 0; i < pageReferences; i++) {
+        flag = 0;
+        
+        for (j = 0; j < pageFrames; j++) {
+            if (frame[j] == reference[i]) {
+                flag = 1;  
+                break;
+            }
+        }
+       
+        if (flag == 0) {
+            int replaceIndex = -1;
+            int farthestIndex = -1;
+            for (j = 0; j < pageFrames; j++) {
+                flag = 0;
+                
+                for (k = i + 1; k < pageReferences; k++) {
+                    if (frame[j] == reference[k]) {
+                        flag = 1;
+                        if (k > farthestIndex) {
+                            farthestIndex = k;
+                            replaceIndex = j;
+                        }
+                        break;
+                    }
+                }
+                
+                if (flag == 0) {
+                    replaceIndex = j;
+                    break;
+                }
+            }
+            frame[replaceIndex] = reference[i];
+            pageFaults++;
+        }
+        printf("Page Frames: ");
+        for (j = 0; j < pageFrames; j++) {
+            printf("%d ", frame[j]);
+        }
+        printf("\n");
+    }
+    
+    printf("Number of Page Faults: %d\n", pageFaults);
+    
+    return 0;
+}
