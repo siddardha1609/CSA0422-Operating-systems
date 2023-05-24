@@ -1,0 +1,57 @@
+#include <stdio.h>
+
+#define NUM_PROCESSES 3
+#define TIME_QUANTUM 4
+
+struct process {
+    int burst_time;
+    int remaining_time;
+    int arrival_time;
+    int completion_time;
+    int waiting_time;
+    int turnaround_time;
+};
+
+int main() {
+    struct process processes[NUM_PROCESSES] = {
+        {24, 24, 0, 0, 0, 0},
+        {3, 3, 0, 0, 0, 0},
+        {3, 3, 0, 0, 0, 0}
+    };
+
+    int time = 0;
+    int num_completed = 0;
+    float total_waiting_time = 0;
+    float total_turnaround_time = 0;
+
+    while (num_completed < NUM_PROCESSES) {
+        for (int i = 0; i < NUM_PROCESSES; i++) {
+            if (processes[i].remaining_time > 0) {
+                if (processes[i].remaining_time <= TIME_QUANTUM) {
+                    time += processes[i].remaining_time;
+                    processes[i].remaining_time = 0;
+                    processes[i].completion_time = time;
+                    num_completed++;
+
+                    processes[i].turnaround_time = processes[i].completion_time - processes[i].arrival_time;
+                    processes[i].waiting_time = processes[i].turnaround_time - processes[i].burst_time;
+
+                    total_waiting_time += processes[i].waiting_time;
+                    total_turnaround_time += processes[i].turnaround_time;
+                }
+                else {
+                    time += TIME_QUANTUM;
+                    processes[i].remaining_time -= TIME_QUANTUM;
+                }
+            }
+        }
+    }
+
+    float avg_waiting_time = total_waiting_time / NUM_PROCESSES;
+    float avg_turnaround_time = total_turnaround_time / NUM_PROCESSES;
+
+    printf("Average Waiting Time: %f\n", avg_waiting_time);
+    printf("Average Turnaround Time: %f\n", avg_turnaround_time);
+
+    return 0;
+}
