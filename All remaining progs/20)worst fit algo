@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+#define MAX_PARTITIONS 10
+
+void worstFit(int partitions[], int numPartitions, int processes[], int numProcesses) {
+    int i, j, worstIndex;
+
+    for (i = 0; i < numProcesses; i++) {
+        int currentProcess = processes[i];
+        worstIndex = -1;
+
+        for (j = 0; j < numPartitions; j++) {
+            if (partitions[j] >= currentProcess) {
+                if (worstIndex == -1 || partitions[j] > partitions[worstIndex]) {
+                    worstIndex = j;
+                }
+            }
+        }
+
+        if (worstIndex != -1) {
+            printf("Allocated Process %d with size %d KB to Partition %d\n", i + 1, currentProcess, worstIndex + 1);
+            partitions[worstIndex] -= currentProcess;
+        } else {
+            printf("Process %d with size %d KB cannot be allocated\n", i + 1, currentProcess);
+        }
+    }
+}
+
+int main() {
+    int partitions[MAX_PARTITIONS];
+    int processes[MAX_PARTITIONS];
+    int numPartitions, numProcesses, i;
+
+    printf("Enter the number of memory partitions: ");
+    scanf("%d", &numPartitions);
+
+    printf("Enter the sizes of memory partitions in KB:\n");
+    for (i = 0; i < numPartitions; i++) {
+        scanf("%d", &partitions[i]);
+    }
+
+    printf("Enter the number of processes: ");
+    scanf("%d", &numProcesses);
+
+    printf("Enter the sizes of processes in KB:\n");
+    for (i = 0; i < numProcesses; i++) {
+        scanf("%d", &processes[i]);
+    }
+
+    printf("\nMemory Allocation using Worst-Fit Algorithm:\n");
+    worstFit(partitions, numPartitions, processes, numProcesses);
+
+    return 0;
+}
