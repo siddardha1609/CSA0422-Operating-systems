@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+sem_t semaphore;
+
+void* process(void* process_id) {
+    int id = *(int*) process_id;
+    
+    printf("Process P%d is waiting...\n", id);
+    sem_wait(&semaphore);
+    printf("Process P%d has acquired the resource.\n", id);
+   
+    sleep(2);
+    
+    printf("Process P%d is releasing the resource.\n", id);
+    sem_post(&semaphore);
+    
+    pthread_exit(NULL);
+}
+
+int main() {
+    int num_instances, num_processes;
+    printf("Enter the number of instances: ");
+    scanf("%d", &num_instances);
+    
+    printf("Enter the number of processes: ");
+    scanf("%d", &num_processes);
+    
+    sem_init(&semaphore, 0, num_instances);
+    
+    pthread_t threads[num_processes];
+    int process_ids[num_processes];
+    
+    for (int i = 0; i < num_processes; i++) {
+        process_ids[i] = i + 1;
+        pthread_create(&threads[i], NULL, process, &process_ids[i]);
+    }
+   
+    printf("Process P5 is waiting...\n");
+    sem_wait(&semaphore);
+    printf("Process P5 has acquired the resource.\n");
+    
+    sleep(2);
+    
+    printf("Process P5 is releasing the resource.\n");
+    sem_post(&semaphore);
+    
+    for (int i = 0; i < num_processes; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    
+    sem_destroy(&semaphore);
+    
+    return 0;
+}
