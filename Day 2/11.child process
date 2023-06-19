@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+void print_odds() {
+    pid_t pid = getpid();
+    printf("Process %d prints odd numbers: ", pid);
+    for (int i = 1; i <= 10; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
+void print_evens() {
+    pid_t pid = getpid();
+    printf("Process %d prints even numbers: ", pid);
+    for (int i = 2; i <= 10; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
+void print_multiples_of_three() {
+    pid_t pid = getpid();
+    printf("Process %d prints multiples of three: ", pid);
+    for (int i = 3; i <= 30; i += 3) {
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
+void print_multiples_of_five() {
+    pid_t pid = getpid();
+    printf("Process %d prints multiples of five: ", pid);
+    for (int i = 5; i <= 50; i += 5) {
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
+int main() {
+    for (int i = 0; i < 4; i++) {
+        pid_t pid = fork();
+        if (pid == 0) {
+            switch (i) {
+                case 0:
+                    print_odds();
+                    break;
+                case 1:
+                    print_evens();
+                    break;
+                case 2:
+                    print_multiples_of_three();
+                    break;
+                case 3:
+                    print_multiples_of_five();
+                    break;
+                default:
+                    printf("Unknown child process\n");
+                    break;
+            }
+            exit(0);
+        } else if (pid < 0) {
+            printf("Fork failed\n");
+            exit(1);
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        wait(NULL);
+    }
+    return 0;
+}
