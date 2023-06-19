@@ -1,0 +1,9 @@
+a=100
+echo "before swap a= $a"
+b=200
+echo "before swap b= $b"
+c=$a
+a=$b
+b=$c
+echo "after swap a= $a"
+echo "after swap b= $b"
