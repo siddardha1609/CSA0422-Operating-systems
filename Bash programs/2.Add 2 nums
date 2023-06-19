@@ -1,0 +1,6 @@
+echo "enter first number a"
+read a
+echo "enter second number b"
+read b
+c=$(expr $a + $b)
+echo "sum of $a and $b is " $c
